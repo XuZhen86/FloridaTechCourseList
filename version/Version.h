@@ -3,13 +3,13 @@
 
 #include<QString>
 
-static const QString versionString="0.0.2.21";
+static const QString versionString="0.1.0.47";
 
 static const QString versionMajor="0";
-static const QString versionMinor="0";
-static const QString versionPatch="2";
-static const QString versionBuild="21";
+static const QString versionMinor="1";
+static const QString versionPatch="0";
+static const QString versionBuild="47";
 
-static const QString lastCommitSha1="68fc6a619955337c8dfd0d752a51d5223d55f7a6";
+static const QString lastCommitSha1="0ba6cf9134dc9da0fad814d9528e6ee0722eec45";
 
 #endif

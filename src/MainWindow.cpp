@@ -54,6 +54,9 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindo
     for(auto attr:electiveAttributes){
         findChild<QComboBox*>("descriptionComboBox")->addItem(attr.key);
     }
+
+    techInfoDialog=new TechnicalInformationDialog(this);
+    connect(findChild<QPushButton*>("technicalInformationButton"),&QPushButton::clicked,techInfoDialog,&TechnicalInformationDialog::show);
 }
 
 MainWindow::~MainWindow(){

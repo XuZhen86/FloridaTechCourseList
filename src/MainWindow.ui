@@ -758,7 +758,7 @@
         <property name="title">
          <string/>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
          <item>
           <widget class="QLineEdit" name="secretCodeLineEdit">
            <property name="sizePolicy">
@@ -769,6 +769,16 @@
            </property>
            <property name="clearButtonEnabled">
             <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="technicalInformationButton">
+           <property name="text">
+            <string>Technical Information</string>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
