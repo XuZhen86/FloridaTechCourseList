@@ -24,7 +24,8 @@ SOURCES += \
 
 HEADERS += \
         src/MainWindow.h \
-        src/MainWindowData.h
+        src/MainWindowData.h \
+        version/Version.h
 
 FORMS += \
         src/MainWindow.ui
@@ -35,9 +36,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    docs/README.md \
     src/fall.json \
     src/spring.json \
-    src/summer.json
+    src/summer.json \
+    version/Version.py \
+    version/Version.txt
 
 RESOURCES += \
     src/Resource.qrc
