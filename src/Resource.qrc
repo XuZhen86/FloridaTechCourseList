@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/courseList">
+        <file>spring.json</file>
+        <file>fall.json</file>
+        <file>summer.json</file>
+    </qresource>
+</RCC>
