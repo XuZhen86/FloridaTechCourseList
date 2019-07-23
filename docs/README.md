@@ -1,25 +1,25 @@
 # Florida Tech Course List
 Florida Tech Course List is a stand-alone program that allows users to view the course list of Florida Tech.
-![Main Window Screenshot](images/9f263c24e461be4b4d0227a484e3f574fac929abda3192e933122dc2e8e945e5.png)
+![Main Window Screenshot](../images/9f263c24e461be4b4d0227a484e3f574fac929abda3192e933122dc2e8e945e5.png)
 
 ## Highlights
 Florida Tech Course List supports multiple functions to ensure a smooth user experience when using the program.
 
 ### Navigate Between Course Lists from 3 Semesters
 Florida Tech Course List is capable of showing course list from Spring, Summer, and Fall semesters. Simply switch between course lists with a click on the buttons! The course list is always freshly downloaded from Florida Tech server to ensure accuracy.
-![Course List Screenshot](images/6d8a93b9fd5d2a906d4919442bd8e2de349036a67695a5c63fe50c4573f50c46.png)
+![Course List Screenshot](../images/6d8a93b9fd5d2a906d4919442bd8e2de349036a67695a5c63fe50c4573f50c46.png)
 
 ### Focus on the Information You Care
 Florida Tech Course List will show all 11 attributes of the courses by default. Options to turn off individual attribute is available.
-![Select Columns Screenshot](images/c6cd5f7cf20650fb18a4bb7b3c012fe58228db6aff3cfd054954940bc56e2616.png)
+![Select Columns Screenshot](../images/c6cd5f7cf20650fb18a4bb7b3c012fe58228db6aff3cfd054954940bc56e2616.png)
 
 ### Instantly Filter Based on Your Choice
 Florida Tech Course List is capable of filtering the course list based on 7 attributes. Simply choose from the drop-down list to see courses that match your choice!
-![Filter Screenshot](images/e477af91bef2db5e554e7ec4a7910df2729b86f260b311752f0db21da35a50bc.png)
+![Filter Screenshot](../images/e477af91bef2db5e554e7ec4a7910df2729b86f260b311752f0db21da35a50bc.png)
 
 ### Detailed Information is Available
 Florida Tech Course List shows the detailed description of any course you select to help with your decision!
-![Additional Information Screenshot](images/731e0d0d989585dbc80870668480bf6b5ed6f0ff0aa8a85847682beff834e9de.png)
+![Additional Information Screenshot](../images/731e0d0d989585dbc80870668480bf6b5ed6f0ff0aa8a85847682beff834e9de.png)
 
 ### Most Importantly, Speed!
 When you are tired navigating the puzzling website, Florida Tech Course List comes to your rescue! Florida Tech Course List is designed to be fast and straight-forward and runs as fast as possible on any computer.
