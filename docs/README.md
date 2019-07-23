@@ -30,8 +30,8 @@ Florida Tech Course List is a multi-platform program for everyone!
 
 ## Downloads
 Florida Tech Course List offers pre-compiled binary packages.
-* For Florida Tech users, please head to [releases](https://github.fit.edu/zxu2016/FloridaTechCourseList/releases) on [Florida Tech GitHub](https://github.fit.edu/).
-* For all other users, please head to [releases](https://github.com/XuZhen86/FloridaTechCourseList/releases) on [Github](https://github.com/).
+* For Florida Tech users, please head to [Latest Release](https://github.fit.edu/zxu2016/FloridaTechCourseList/releases/latest) on [Florida Tech GitHub](https://github.fit.edu/).
+* For all other users, please head to [Latest Release](https://github.com/XuZhen86/FloridaTechCourseList/releases/latest) on [Github](https://github.com/).
 
 ## How to Install
 Due to its nature, Florida Tech Course List requires some tackle before you can use it. But do not worry, you will be fine if you follow the guide!
@@ -41,7 +41,7 @@ Due to its nature, Florida Tech Course List requires some tackle before you can 
 1. Unzip the file to your Desktop.
 1. Double click the program in the folder and it should run.
 1. You are good to go, enjoy the program!
-1. NOTE: Please do not remove any files from the folder, even if they seem weird. They are meant to stick together and they stand strong when having each other!
+1. NOTE: Please do NOT remove any files from the folder, even if they seem weird. They are meant to stick together and they stand strong when having each other!
 
 ### For macOS
 1. Download the zip file.
