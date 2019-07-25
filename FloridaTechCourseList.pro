@@ -22,7 +22,8 @@ SOURCES += \
         src/ElapsedTimer.cpp \
         src/Main.cpp \
         src/MainWindow.cpp \
-        src/TechInfoDialog.cpp
+        src/TechInfoDialog.cpp \
+        version/Version.cpp
 
 HEADERS += \
         src/ElapsedTimer.h \

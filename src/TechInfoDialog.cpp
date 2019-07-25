@@ -32,10 +32,10 @@ void TechInfoDialog::tabWidgetCurrentChanged(int index){
 }
 
 void TechInfoDialog::refreshPerformanceTab(){
-    QListWidget *performanceListWidget=findChild<QListWidget*>("performanceListWidget");
+    QPlainTextEdit *performancePlainTextEdit=findChild<QPlainTextEdit*>("performancePlainTextEdit");
 
-    performanceListWidget->clear();
+    performancePlainTextEdit->clear();
     for(auto pair:ElapsedTimer::getAll()){
-        performanceListWidget->addItem(QString("%1 = %2ms").arg(pair.first).arg(pair.second));
+        performancePlainTextEdit->appendPlainText(QString("%1 = %2ms").arg(pair.first).arg(pair.second));
     }
 }

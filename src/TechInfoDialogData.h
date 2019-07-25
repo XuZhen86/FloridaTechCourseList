@@ -11,8 +11,8 @@ typedef struct{
 }TechInfoAttribute;
 
 static const QList<TechInfoAttribute> techInfoAttributes{
-    {"versionLineEdit",versionString},
-    {"gitCommitLineEdit",lastCommitSha1},
+    {"versionLineEdit",Version::versionString},
+    {"gitCommitLineEdit",Version::lastCommitSha1},
     {"buildAbiLineEdit",QSysInfo::buildAbi()},
     {"buildCpuArchLineEdit",QSysInfo::buildCpuArchitecture()},
     {"currCpuArchLineEdit",QSysInfo::currentCpuArchitecture()},

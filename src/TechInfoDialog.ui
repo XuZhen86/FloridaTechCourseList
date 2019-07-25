@@ -301,14 +301,8 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QListWidget" name="performanceListWidget">
-         <property name="editTriggers">
-          <set>QAbstractItemView::NoEditTriggers</set>
-         </property>
-         <property name="showDropIndicator" stdset="0">
-          <bool>false</bool>
-         </property>
-         <property name="sortingEnabled">
+        <widget class="QPlainTextEdit" name="performancePlainTextEdit">
+         <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>

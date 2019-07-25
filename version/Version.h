@@ -1,15 +1,18 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#include<QString>
+class Version{
+    public:
+    static const char *versionString;
+    static const char *versionMajor;
+    static const char *versionMinor;
+    static const char *versionPatch;
+    static const char *versionBuild;
+    static const char *lastCommitSha1;
 
-static const QString versionString="0.1.3.143";
-
-static const QString versionMajor="0";
-static const QString versionMinor="1";
-static const QString versionPatch="3";
-static const QString versionBuild="143";
-
-static const QString lastCommitSha1="3b9d8c0ad08ea660b4fb4dc4c0a0df3a6618844a";
+    private:
+    Version();
+    ~Version();
+};
 
 #endif
