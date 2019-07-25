@@ -17,6 +17,7 @@ class MainWindow:public QMainWindow{
     ~MainWindow();
 
     private:
+    void findChild4Attributes();
     QList<QStringList> getCourseList(const QString &fileName);
     QList<QStringList> getCourseList(const QUrl &url);
     QList<QStringList> processJsonData(const QByteArray &jsonData);

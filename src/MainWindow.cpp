@@ -21,6 +21,7 @@
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindow){
     ui->setupUi(this);
     courseTable=findChild<QTableWidget*>("courseTable");
+    findChild4Attributes();
 
     std::sort(courseAttributes.begin(),courseAttributes.end());
 
@@ -35,19 +36,20 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindo
     connect(courseTable,&QTableWidget::currentCellChanged,this,&MainWindow::courseTableCurrentCellChanged);
 
     for(auto attr:semesterButtonAttributes){
-        connect(findChild<QPushButton*>(attr.buttonName),&QPushButton::clicked,this,&MainWindow::semesterButtonClicked);
+        connect(attr.button,&QPushButton::clicked,this,&MainWindow::semesterButtonClicked);
     }
 
     for(auto attr:courseAttributes){
-        if(attr.checkBoxObjName.isEmpty()){
+        if(attr.checkBoxName.isEmpty()){
             continue;
         }
-        connect(findChild<QCheckBox*>(attr.checkBoxObjName),&QCheckBox::stateChanged,this,&MainWindow::selectCheckBoxStateChanged);
+
+        connect(attr.checkBox,&QCheckBox::stateChanged,this,&MainWindow::selectCheckBoxStateChanged);
     }
 
     for(auto attr:filterAttributes){
-        connect(findChild<QCheckBox*>(attr.checkBoxName),&QCheckBox::stateChanged,this,&MainWindow::filterCheckBoxStateChanged);
-        connect(findChild<QComboBox*>(attr.comboBoxName),&QComboBox::currentTextChanged,this,&MainWindow::filterComboBoxCurrentTextChanged);
+        connect(attr.checkBox,&QCheckBox::stateChanged,this,&MainWindow::filterCheckBoxStateChanged);
+        connect(attr.comboBox,&QComboBox::currentTextChanged,this,&MainWindow::filterComboBoxCurrentTextChanged);
     }
 
     std::sort(electiveAttributes.begin(),electiveAttributes.end());
@@ -63,19 +65,47 @@ MainWindow::~MainWindow(){
     delete ui;
 }
 
+void MainWindow::findChild4Attributes(){
+    for(auto &attr:courseAttributes){
+        if(!attr.checkBoxName.isEmpty()){
+            attr.checkBox=findChild<QCheckBox*>(attr.checkBoxName);
+        }
+    }
+
+    for(auto &attr:semesterButtonAttributes){
+        if(!attr.buttonName.isEmpty()){
+            attr.button=findChild<QPushButton*>(attr.buttonName);
+        }
+    }
+
+    for(auto &attr:filterAttributes){
+        if(!attr.checkBoxName.isEmpty()){
+            attr.checkBox=findChild<QCheckBox*>(attr.checkBoxName);
+        }
+
+        if(!attr.comboBoxName.isEmpty()){
+            attr.comboBox=findChild<QComboBox*>(attr.comboBoxName);
+        }
+    }
+
+    for(auto &attr:additionalInfoAttributes){
+        if(!attr.plainTextEditName.isEmpty()){
+            attr.plainTextEdit=findChild<QPlainTextEdit*>(attr.plainTextEditName);
+        }
+    }
+}
+
 void MainWindow::semesterButtonClicked(){
     QPushButton *button=dynamic_cast<QPushButton*>(sender());
     QString buttonName=button->objectName();
+    auto attrIter=std::find_if(semesterButtonAttributes.begin(),semesterButtonAttributes.end(),
+                               [&buttonName](SemesterButtonAttribute attr){return buttonName==attr.buttonName;});
 
     QList<QStringList> courseList;
-    for(auto attr:semesterButtonAttributes){
-        if(buttonName==attr.buttonName){
-            if(findChild<QLineEdit*>("secretCodeLineEdit")->text()=="StaticCourseList"){
-                courseList=getCourseList(attr.staticCourseListFileName);
-            }else{
-                courseList=getCourseList(QUrl(attr.dynamicCourseListUrl));
-            }
-        }
+    if(findChild<QLineEdit*>("secretCodeLineEdit")->text()=="StaticCourseList"){
+        courseList=getCourseList(attrIter->staticCourseListFileName);
+    }else{
+        courseList=getCourseList(QUrl(attrIter->dynamicCourseListUrl));
     }
 
     courseTable->clearSelection();
@@ -102,7 +132,7 @@ void MainWindow::semesterButtonClicked(){
             continue;
         }
 
-        QComboBox *comboBox=findChild<QComboBox*>(attr.comboBoxName);
+        QComboBox *comboBox=attr.comboBox;
         QStringList comboBoxStrList=comboBoxSet[attr.comboBoxSetIndex].toList();
 
         comboBoxStrList.append("");
@@ -208,27 +238,17 @@ QList<QStringList> MainWindow::processJsonData(const QByteArray &jsonData){
 
 void MainWindow::selectCheckBoxStateChanged(){
     for(auto attr:courseAttributes){
-        courseTable->setColumnHidden(attr.columnIndex,
-                                     attr.columnAlwaysHidden||!findChild<QCheckBox*>(attr.checkBoxObjName)->isChecked());
+        bool columnHidden=attr.columnAlwaysHidden||!attr.checkBox->isChecked();
+        courseTable->setColumnHidden(attr.columnIndex,columnHidden);
     }
 }
 
 void MainWindow::filterCheckBoxStateChanged(){
-    QCheckBox *checkBox=dynamic_cast<QCheckBox*>(sender());
-    QString checkBoxName=checkBox->objectName();
-
-    bool foundFilterPair=false;
     for(auto attr:filterAttributes){
-        if(checkBoxName==attr.checkBoxName){
-            findChild<QComboBox*>(attr.comboBoxName)->setDisabled(!checkBox->isChecked());
-            foundFilterPair=true;
-        }
-    }
-    if(!foundFilterPair){
-        qFatal("Unexpected CheckBox name %s",checkBoxName.toLatin1().data());
+        attr.comboBox->setDisabled(!attr.checkBox->isChecked());
     }
 
-    filterComboBoxCurrentTextChanged();
+    QTimer::singleShot(0,this,&MainWindow::filterComboBoxCurrentTextChanged);
 }
 
 void MainWindow::filterComboBoxCurrentTextChanged(){
@@ -236,8 +256,8 @@ void MainWindow::filterComboBoxCurrentTextChanged(){
 
     for(int courseNum=0;courseNum<courseTable->rowCount();courseNum++){
         for(auto attr:filterAttributes){
-            QCheckBox *checkBox=findChild<QCheckBox*>(attr.checkBoxName);
-            QComboBox *comboBox=findChild<QComboBox*>(attr.comboBoxName);
+            QCheckBox *checkBox=attr.checkBox;
+            QComboBox *comboBox=attr.comboBox;
             QString comboBoxText=comboBox->currentText();
 
             if(checkBox->isChecked()&&!comboBoxText.isEmpty()){
@@ -272,7 +292,7 @@ void MainWindow::courseTableCurrentCellChanged(int currentRow,int currentColumn,
     }
 
     for(auto attr:additionalInfoAttributes){
-        QPlainTextEdit *plainTextEdit=findChild<QPlainTextEdit*>(attr.plainTextEditName);
+        QPlainTextEdit *plainTextEdit=attr.plainTextEdit;
         QString text=courseTable->item(currentRow,attr.columnIndex)->text();
 
         plainTextEdit->setPlainText(text);
