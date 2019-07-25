@@ -125,8 +125,6 @@ void MainWindow::semesterButtonClicked(){
         }
     }
 
-    selectCheckBoxStateChanged();
-
     for(auto attr:filterAttributes){
         if(attr.comboBoxSetIndex==-1){
             continue;
@@ -141,6 +139,8 @@ void MainWindow::semesterButtonClicked(){
         comboBox->clear();
         comboBox->addItems(comboBoxStrList);
     }
+
+    QTimer::singleShot(1,this,&MainWindow::selectCheckBoxStateChanged);
 }
 
 QList<QStringList> MainWindow::getCourseList(const QUrl &url){
@@ -150,14 +150,22 @@ QList<QStringList> MainWindow::getCourseList(const QUrl &url){
 
     QScopedPointer<QNetworkReply> networkReply(netAccMngr.get(QNetworkRequest(url)));
 
-    connect(&netAccMngr,&QNetworkAccessManager::finished,&eventLoop,&QEventLoop::quit);
-    connect(&progressDialog,&QProgressDialog::canceled,&eventLoop,&QEventLoop::quit);
+    connect(&netAccMngr,&QNetworkAccessManager::finished,
+        [&eventLoop](){
+            QTimer::singleShot(1,&eventLoop,&QEventLoop::quit);
+        }
+    );
+    connect(&progressDialog,&QProgressDialog::canceled,
+        [&eventLoop](){
+            QTimer::singleShot(1,&eventLoop,&QEventLoop::quit);
+        }
+    );
     connect(networkReply.data(),&QNetworkReply::downloadProgress,
-            [&progressDialog](long long bytesReceived,long long bytesTotal){
-                progressDialog.setRange(0,static_cast<int>(bytesTotal));
-                progressDialog.setValue(static_cast<int>(bytesReceived));
-                progressDialog.setLabelText(QString("Received %L1 bytes...").arg(bytesReceived));
-            }
+        [&progressDialog](long long bytesReceived,long long bytesTotal){
+            progressDialog.setRange(0,static_cast<int>(bytesTotal));
+            progressDialog.setValue(static_cast<int>(bytesReceived));
+            progressDialog.setLabelText(QString("Received %L1 bytes...").arg(bytesReceived));
+        }
     );
 
     progressDialog.setWindowModality(Qt::WindowModal);
@@ -248,7 +256,7 @@ void MainWindow::filterCheckBoxStateChanged(){
         attr.comboBox->setDisabled(!attr.checkBox->isChecked());
     }
 
-    QTimer::singleShot(0,this,&MainWindow::filterComboBoxCurrentTextChanged);
+    QTimer::singleShot(1,this,&MainWindow::filterComboBoxCurrentTextChanged);
 }
 
 void MainWindow::filterComboBoxCurrentTextChanged(){
