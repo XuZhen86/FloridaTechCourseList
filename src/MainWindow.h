@@ -3,7 +3,7 @@
 
 #include<QMainWindow>
 #include<QTableWidget>
-#include"TechnicalInformationDialog.h"
+#include"TechInfoDialog.h"
 
 namespace Ui{
     class MainWindow;
@@ -24,7 +24,7 @@ class MainWindow:public QMainWindow{
 
     private:
     Ui::MainWindow *ui;
-    TechnicalInformationDialog *techInfoDialog;
+    TechInfoDialog *techInfoDialog;
     QTableWidget *courseTable;
 
     private slots:

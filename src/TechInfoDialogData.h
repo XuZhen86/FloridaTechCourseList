@@ -1,5 +1,5 @@
-#ifndef TECHNICALINFORMATIONDIALOGDATA_H
-#define TECHNICALINFORMATIONDIALOGDATA_H
+#ifndef TECHINFODIALOGDATA_H
+#define TECHINFODIALOGDATA_H
 
 #include"version/Version.h"
 #include<QList>
@@ -8,9 +8,9 @@
 typedef struct{
     QString lineEditName;
     QString text;
-}TechnicalInformationAttribute;
+}TechInfoAttribute;
 
-static const QList<TechnicalInformationAttribute> technicalInformationAttributes{
+static const QList<TechInfoAttribute> techInfoAttributes{
     {"versionLineEdit",versionString},
     {"gitCommitLineEdit",lastCommitSha1},
     {"buildAbiLineEdit",QSysInfo::buildAbi()},
@@ -23,4 +23,9 @@ static const QList<TechnicalInformationAttribute> technicalInformationAttributes
     {"productVersionLineEdit",QSysInfo::productVersion()}
 };
 
-#endif // TECHNICALINFORMATIONDIALOGDATA_H
+static const QList<QString> tabNames{
+    "systemTab",
+    "performanceTab"
+};
+
+#endif // TECHINFODIALOGDATA_H

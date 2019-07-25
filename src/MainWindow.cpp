@@ -1,6 +1,7 @@
 #include"MainWindow.h"
 #include"MainWindowData.h"
 #include"ui_MainWindow.h"
+#include"ElapsedTimer.h"
 
 #include<QDebug>
 #include<QFile>
@@ -57,8 +58,8 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindo
         findChild<QComboBox*>("descriptionComboBox")->addItem(attr.key);
     }
 
-    techInfoDialog=new TechnicalInformationDialog(this);
-    connect(findChild<QPushButton*>("technicalInformationButton"),&QPushButton::clicked,techInfoDialog,&TechnicalInformationDialog::show);
+    techInfoDialog=new TechInfoDialog(this);
+    connect(findChild<QPushButton*>("techInfoButton"),&QPushButton::clicked,techInfoDialog,&TechInfoDialog::show);
 }
 
 MainWindow::~MainWindow(){
@@ -96,6 +97,8 @@ void MainWindow::findChild4Attributes(){
 }
 
 void MainWindow::semesterButtonClicked(){
+    ElapsedTimer(__PRETTY_FUNCTION__).restart();
+
     QPushButton *button=dynamic_cast<QPushButton*>(sender());
     QString buttonName=button->objectName();
     auto attrIter=std::find_if(semesterButtonAttributes.begin(),semesterButtonAttributes.end(),
@@ -141,6 +144,8 @@ void MainWindow::semesterButtonClicked(){
     }
 
     QTimer::singleShot(1,this,&MainWindow::selectCheckBoxStateChanged);
+
+    ElapsedTimer(__PRETTY_FUNCTION__).restart();
 }
 
 QList<QStringList> MainWindow::getCourseList(const QUrl &url){
@@ -199,6 +204,8 @@ QList<QStringList> MainWindow::getCourseList(const QString &fileName){
 }
 
 QList<QStringList> MainWindow::processJsonData(const QByteArray &jsonData){
+    ElapsedTimer(__PRETTY_FUNCTION__).restart();
+
     QJsonDocument jsonDoc=QJsonDocument::fromJson(jsonData);
     QList<QStringList> courseList;
 
@@ -241,6 +248,7 @@ QList<QStringList> MainWindow::processJsonData(const QByteArray &jsonData){
     }
 
     qInfo("Read %d courses",courseList.size());
+    ElapsedTimer(__PRETTY_FUNCTION__).restart();
     return courseList;
 }
 
@@ -260,6 +268,8 @@ void MainWindow::filterCheckBoxStateChanged(){
 }
 
 void MainWindow::filterComboBoxCurrentTextChanged(){
+    ElapsedTimer(__PRETTY_FUNCTION__).restart();
+
     QVector<bool> courseHidden(courseTable->rowCount(),false);
 
     for(int courseNum=0;courseNum<courseTable->rowCount();courseNum++){
@@ -289,6 +299,8 @@ void MainWindow::filterComboBoxCurrentTextChanged(){
     for(int courseNum=0;courseNum<courseTable->rowCount();courseNum++){
         courseTable->setRowHidden(courseNum,courseHidden.at(courseNum));
     }
+
+    ElapsedTimer(__PRETTY_FUNCTION__).restart();
 }
 
 void MainWindow::courseTableCurrentCellChanged(int currentRow,int currentColumn,int previousRow,int previousColumn){

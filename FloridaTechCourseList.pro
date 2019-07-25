@@ -19,20 +19,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        src/ElapsedTimer.cpp \
         src/Main.cpp \
         src/MainWindow.cpp \
-        src/TechnicalInformationDialog.cpp
+        src/TechInfoDialog.cpp
 
 HEADERS += \
+        src/ElapsedTimer.h \
         src/MainWindow.h \
         src/MainWindowData.h \
-        src/TechnicalInformationDialog.h \
-        src/TechnicalInformationDialogData.h \
+        src/TechInfoDialog.h \
+        src/TechInfoDialogData.h \
         version/Version.h
 
 FORMS += \
         src/MainWindow.ui \
-        src/TechnicalInformationDialog.ui
+        src/TechInfoDialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

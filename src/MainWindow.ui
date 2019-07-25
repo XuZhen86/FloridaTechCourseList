@@ -773,7 +773,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="technicalInformationButton">
+          <widget class="QPushButton" name="techInfoButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
