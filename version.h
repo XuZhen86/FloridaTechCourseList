@@ -15,4 +15,4 @@ class Version{
     ~Version();
 };
 
-#endif
+#endif // VERSION_H

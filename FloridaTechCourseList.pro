@@ -18,37 +18,28 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
-SOURCES += \
-        src/ElapsedTimer.cpp \
-        src/Main.cpp \
-        src/MainWindow.cpp \
-        src/TechInfoDialog.cpp \
-        version/Version.cpp
+SOURCES += main.cpp \
+    debugdialog.cpp \
+    mainwindow.cpp \
+    version.cpp
 
-HEADERS += \
-        src/ElapsedTimer.h \
-        src/MainWindow.h \
-        src/MainWindowData.h \
-        src/TechInfoDialog.h \
-        src/TechInfoDialogData.h \
-        version/Version.h
-
-FORMS += \
-        src/MainWindow.ui \
-        src/TechInfoDialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES += \
-    docs/README.md \
-    src/fall.json \
-    src/spring.json \
-    src/summer.json \
-    version/Version.py \
-    version/Version.txt
+HEADERS += \
+    debugdialog.h \
+    mainwindow.h \
+    version.h
+
+FORMS += \
+    debugdialog.ui \
+    mainwindow.ui
 
 RESOURCES += \
-    src/Resource.qrc
+    resource.qrc
+
+DISTFILES +=
+
