@@ -478,13 +478,13 @@ QList<QStringList> MainWindow::parseCourseData(const QByteArray &courseData){
 }
 
 QString MainWindow::parseLocation(const QJsonValue &courseValue){
-    if(courseValue["building"]!="TBA"){
-        return QString("%1 %2").arg(
-                    courseValue["building"].toString(),
-                    courseValue["room"].toString());
+    if(courseValue["building"]=="TBA"){
+        return "(TBA)";
     }
 
-    return QString();
+    return QString("%1 %2").arg(
+                courseValue["building"].toString(),
+                courseValue["room"].toString());
 }
 
 QString MainWindow::parseTime(const QJsonValue &courseValue,const QString &jsonName){
@@ -500,13 +500,16 @@ QString MainWindow::parseTime(const QJsonValue &courseValue,const QString &jsonN
 }
 
 QString MainWindow::parseOthers(const QJsonValue &courseValue,const CourseColumnAttr &attr){
+    auto value=courseValue[attr.jsonName];
+
     switch(attr.jsonType){
         case QJsonValue::Double:
-            return QString::number(courseValue[attr.jsonName].toInt());
+            return QString::number(value.toInt());
         case QJsonValue::String:
-            return courseValue[attr.jsonName]
-                    .toString()
-                    .replace("&#039;","'");
+            if(value.toString()=="TBA"){
+                return "(TBA)";
+            }
+            return value.toString().replace("&#039;","'");
         default:
             return QString();
     }
@@ -537,6 +540,8 @@ void MainWindow::semesterButtonClicked(){
     QList<QStringList> courseList=parseCourseData(courseData);
     if(!courseList.isEmpty()){ // An empty courseList is most likely caused by error
         courseTableSetCourseList(courseList);
+        courseTableColorizeEnroll();
+
         filterSetCourseList(courseList);
         groupBoxEnableAll();
     }
@@ -554,6 +559,39 @@ void MainWindow::courseTableSetCourseList(const QList<QStringList> &courseList){
                 attr.columnIndex,
                 new QTableWidgetItem(courseList.at(row).at(attr.columnIndex))
             );
+        }
+    }
+}
+
+void MainWindow::courseTableColorizeEnroll(){
+    int actualEnrollColumnIndex=std::find_if(
+                courseColumnAttrs.begin(),
+                courseColumnAttrs.end(),
+                [](CourseColumnAttr &attr){
+                    return attr.columnTitle=="Actual\nEnroll";
+                }
+            )->columnIndex;
+
+    int maxEnrollColumnIndex=std::find_if(
+                courseColumnAttrs.begin(),
+                courseColumnAttrs.end(),
+                [](CourseColumnAttr &attr){
+                    return attr.columnTitle=="Max\nEnroll";
+                }
+            )->columnIndex;
+
+    for(int row=0;row<courseTable->rowCount();row++){
+        int actualEnroll=courseTable->item(row,actualEnrollColumnIndex)->text().toInt();
+        int maxEnroll=courseTable->item(row,maxEnrollColumnIndex)->text().toInt();
+
+        if(maxEnroll){
+            double percentEnroll=(double)actualEnroll/maxEnroll;
+            if(percentEnroll>1){
+                percentEnroll=1;
+            }
+
+            auto color=QColor::fromHsvF((1-percentEnroll)*120/360,0.75,0.75);
+            courseTable->item(row,actualEnrollColumnIndex)->setTextColor(color);
         }
     }
 }

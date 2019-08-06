@@ -34,6 +34,7 @@ class MainWindow:public QMainWindow{
     QTableWidget *courseTable;
     void courseTableInit();
     void courseTableSetCourseList(const QList<QStringList> &courseList);
+    void courseTableColorizeEnroll();
 
     private:
     DebugDialog *debugDialog;
