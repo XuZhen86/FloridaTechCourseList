@@ -2,6 +2,7 @@
 #include"ui_mainwindow.h"
 #include"version.h"
 
+#include<QCompleter>
 #include<QEventLoop>
 #include<QFileDialog>
 #include<QJsonArray>
@@ -113,30 +114,35 @@ void MainWindow::semesterButtonConnect(){
 }
 
 struct MainWindow::FilterAttr{
-    QString             checkBoxName;
-    QCheckBox           *checkBox;
-    QString             comboBoxName;
-    QComboBox           *comboBox;
-    int                 columnIndex;
-    int                 comboBoxSetIndex;
-    Qt::CaseSensitivity caseSensitivity;
-    bool                matchFullText;
+    QString                    checkBoxName;
+    QCheckBox                  *checkBox;
+    QString                    comboBoxName;
+    QComboBox                  *comboBox;
+    int                        columnIndex;
+    int                        comboBoxSetIndex;
+    Qt::CaseSensitivity        caseSensitivity;
+    bool                       matchFullText;
+    QCompleter::CompletionMode completionMode;
 };
 
 QList<MainWindow::FilterAttr> MainWindow::filterAttrs{
-    {"crnFilterCheckBox",         nullptr,"crnComboBox",         nullptr,0, 0, Qt::CaseInsensitive,true},
-    {"courseNumberFilterCheckBox",nullptr,"courseNumberComboBox",nullptr,2, 1, Qt::CaseInsensitive,false},
-    {"subjectFilterCheckBox",     nullptr,"subjectComboBox",     nullptr,1, 2, Qt::CaseInsensitive,true},
-    {"titleFilterCheckBox",       nullptr,"titleComboBox",       nullptr,3, 3, Qt::CaseInsensitive,false},
-    {"instructorFilterCheckBox",  nullptr,"instructorComboBox",  nullptr,4, 4, Qt::CaseInsensitive,true},
-    {"daysFilterCheckBox",        nullptr,"daysComboBox",        nullptr,5, 5, Qt::CaseInsensitive,true},
-    {"descriptionFilterCheckBox", nullptr,"descriptionComboBox", nullptr,11,-1,Qt::CaseSensitive,  false}
+    {"crnFilterCheckBox",         nullptr,"crnComboBox",         nullptr,0, 0, Qt::CaseInsensitive,true, QCompleter::PopupCompletion},
+    {"courseNumberFilterCheckBox",nullptr,"courseNumberComboBox",nullptr,2, 1, Qt::CaseInsensitive,false,QCompleter::PopupCompletion},
+    {"subjectFilterCheckBox",     nullptr,"subjectComboBox",     nullptr,1, 2, Qt::CaseInsensitive,true, QCompleter::PopupCompletion},
+    {"titleFilterCheckBox",       nullptr,"titleComboBox",       nullptr,3, 3, Qt::CaseInsensitive,false,QCompleter::PopupCompletion},
+    {"instructorFilterCheckBox",  nullptr,"instructorComboBox",  nullptr,4, 4, Qt::CaseInsensitive,true, QCompleter::PopupCompletion},
+    {"daysFilterCheckBox",        nullptr,"daysComboBox",        nullptr,5, 5, Qt::CaseInsensitive,true, QCompleter::PopupCompletion},
+    {"descriptionFilterCheckBox", nullptr,"descriptionComboBox", nullptr,11,-1,Qt::CaseSensitive,  false,QCompleter::PopupCompletion}
 };
 
 void MainWindow::filterAttrsInit(){
     for(auto &attr:filterAttrs){
         attr.checkBox=findChild<QCheckBox*>(attr.checkBoxName);
         attr.comboBox=findChild<QComboBox*>(attr.comboBoxName);
+
+        if(attr.comboBox->completer()!=nullptr){
+            attr.comboBox->completer()->setCompletionMode(attr.completionMode);
+        }
     }
 }
 
@@ -271,7 +277,8 @@ QList<MainWindow::GroupBoxAttr> MainWindow::groupBoxAttrs{
     {"semesterGroupBox",nullptr,true},
     {"selectColumnsGroupBox",nullptr,false},
     {"filterGroupBox",nullptr,false},
-    {"debugGroupBox",nullptr,true}
+    {"debugGroupBox",nullptr,true},
+    {"advancedGroupBox",nullptr,false}
 };
 
 void MainWindow::groupBoxAttrsInit(){
@@ -334,8 +341,23 @@ void MainWindow::debugDialogConnect(){
     );
 }
 
-MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindow){
+void MainWindow::advancedSettingInit(){
+    this->settings["useRegExpInFilter"]=Qt::Unchecked;
+}
 
+void MainWindow::advancedSettingConnect(){
+    // Sync checkbox state with settings map
+    connect(
+        findChild<QCheckBox*>("useRegExpInFilterCheckBox"),
+        &QCheckBox::stateChanged,
+        [this](int state){
+            this->settings["useRegExpInFilter"]=state;
+            QMetaObject::invokeMethod(this,&MainWindow::filterCheckBoxStateChanged,Qt::QueuedConnection);
+        }
+    );
+}
+
+MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindow){
     ui->setupUi(this);
     secretCodeLineEdit=findChild<QLineEdit*>("secretCodeLineEdit");
     debugButton=findChild<QPushButton*>("debugButton");
@@ -348,7 +370,8 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindo
 
     attrsInit();
     courseTableInit();
-
+    advancedSettingInit();
+    advancedSettingConnect();
     debugDialogInit();
     debugDialogConnect();
 }
@@ -564,7 +587,7 @@ void MainWindow::courseTableSetCourseList(const QList<QStringList> &courseList){
 }
 
 void MainWindow::courseTableColorizeEnroll(){
-    int actualEnrollColumnIndex=std::find_if(
+    const int actualEnrollColumnIndex=std::find_if(
                 courseColumnAttrs.begin(),
                 courseColumnAttrs.end(),
                 [](CourseColumnAttr &attr){
@@ -572,7 +595,7 @@ void MainWindow::courseTableColorizeEnroll(){
                 }
             )->columnIndex;
 
-    int maxEnrollColumnIndex=std::find_if(
+    const int maxEnrollColumnIndex=std::find_if(
                 courseColumnAttrs.begin(),
                 courseColumnAttrs.end(),
                 [](CourseColumnAttr &attr){
@@ -584,12 +607,10 @@ void MainWindow::courseTableColorizeEnroll(){
         int actualEnroll=courseTable->item(row,actualEnrollColumnIndex)->text().toInt();
         int maxEnroll=courseTable->item(row,maxEnrollColumnIndex)->text().toInt();
 
+        maxEnroll=std::max(maxEnroll,actualEnroll);
+
         if(maxEnroll){
             double percentEnroll=(double)actualEnroll/maxEnroll;
-            if(percentEnroll>1){
-                percentEnroll=1;
-            }
-
             auto color=QColor::fromHsvF((1-percentEnroll)*120/360,0.75,0.75);
             courseTable->item(row,actualEnrollColumnIndex)->setTextColor(color);
         }
@@ -640,19 +661,32 @@ void MainWindow::filterComboBoxCurrentTextChanged(){
             continue;
         }
 
-        for(int row=0;row<courseTable->rowCount();row++){
-            if(!hidden.at(row)){
-                auto courseText=courseTable->item(row,attr.columnIndex)->text();
+        QRegularExpression regExp(comboBoxText);
 
-                if(attr.matchFullText){
-                    if(courseText.compare(comboBoxText,attr.caseSensitivity)!=0){
-                        hidden[row]=true;
-                    }
-                }else{
-                    if(!courseText.contains(comboBoxText,attr.caseSensitivity)){
-                        hidden[row]=true;
-                    }
-                }
+        for(int row=0;row<courseTable->rowCount();row++){
+            auto courseText=courseTable->item(row,attr.columnIndex)->text();
+
+            // skip if already hidden
+            if(hidden.at(row)){
+                continue;
+            }
+
+            // match regexp
+            if(settings["useRegExpInFilter"]==Qt::Checked&&regExp.isValid()){
+                hidden[row]=!regExp.match(courseText).hasMatch();
+                continue;
+            }
+
+            // match full text
+            if(attr.matchFullText&&courseText.compare(comboBoxText,attr.caseSensitivity)!=0){
+                hidden[row]=true;
+                continue;
+            }
+
+            // match partial text
+            if(!attr.matchFullText&&!courseText.contains(comboBoxText,attr.caseSensitivity)){
+                hidden[row]=true;
+                continue;
             }
         }
     }

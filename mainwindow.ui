@@ -686,6 +686,22 @@
        </widget>
       </item>
       <item>
+       <widget class="QGroupBox" name="advancedGroupBox">
+        <property name="title">
+         <string>Advanced Settings</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="useRegExpInFilterCheckBox">
+           <property name="text">
+            <string>Use Regular Expressions in Filters</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>

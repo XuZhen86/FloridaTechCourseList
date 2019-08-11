@@ -75,6 +75,11 @@ class MainWindow:public QMainWindow{
     QString parseTime(const QJsonValue &courseValue,const QString &jsonName);
     QString parseOthers(const QJsonValue &courseValue,const CourseColumnAttr &attr);
 
+    private:
+    QMap<QString,QVariant> settings;
+    void advancedSettingInit();
+    void advancedSettingConnect();
+
     private slots:
     void semesterButtonClicked();
     void selectCheckBoxStateChanged();
