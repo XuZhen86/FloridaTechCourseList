@@ -18,6 +18,7 @@
 #include<QTimer>
 #include<QVector>
 #include<algorithm>
+#include<tuple>
 
 struct MainWindow::CourseColumnAttr{
     QString          columnTitle;
@@ -51,7 +52,8 @@ QList<MainWindow::CourseColumnAttr> MainWindow::courseColumnAttrs{
     {"Description",   "description",  QJsonValue::String,11,"",                          nullptr,false,-1,true, 0},
     {"Credit\nHours", "credit_hours", QJsonValue::Double,12,"",                          nullptr,false,-1,true, 0},
     {"Location",      "",             QJsonValue::Null,  13,"",                          nullptr,false,-1,true, 0},
-    {"Current\nTerm", "current_term", QJsonValue::String,14,"",                          nullptr,false,-1,true, 0}
+    {"Current\nTerm", "current_term", QJsonValue::String,14,"",                          nullptr,false,-1,true, 0},
+    {"Term",          "term",         QJsonValue::String,15,"",                          nullptr,false,-1,true, 0}
 };
 
 void MainWindow::courseColumnAttrsInit(){
@@ -74,10 +76,8 @@ void MainWindow::courseColumnConnect(){
         }
 
         connect(
-            attr.selectCheckBox,
-            &QCheckBox::stateChanged,
-            this,
-            &MainWindow::selectCheckBoxStateChanged
+            attr.selectCheckBox,&QCheckBox::stateChanged,
+            this,&MainWindow::selectCheckBoxStateChanged
         );
     }
 }
@@ -105,10 +105,8 @@ void MainWindow::semesterButtonAttrsInit(){
 void MainWindow::semesterButtonConnect(){
     for(const auto &attr:semesterButtonAttrs){
         connect(
-            attr.button,
-            &QPushButton::clicked,
-            this,
-            &MainWindow::semesterButtonClicked
+            attr.button,&QPushButton::clicked,
+            this,&MainWindow::semesterButtonClicked
         );
     }
 }
@@ -149,8 +147,7 @@ void MainWindow::filterAttrsInit(){
 void MainWindow::filterAttrsValidate(){
     for(auto &fAttr:filterAttrs){
         assert(std::any_of(
-            courseColumnAttrs.begin(),
-            courseColumnAttrs.end(),
+            courseColumnAttrs.begin(),courseColumnAttrs.end(),
             [&fAttr](const CourseColumnAttr &ccAttr){
                 return fAttr.columnIndex==ccAttr.columnIndex
                         &&fAttr.comboBoxSetIndex==ccAttr.filterComboBoxSetIndex;
@@ -162,17 +159,13 @@ void MainWindow::filterAttrsValidate(){
 void MainWindow::filterAttrsConnect(){
     for(const auto &attr:filterAttrs){
         connect(
-            attr.checkBox,
-            &QCheckBox::stateChanged,
-            this,
-            &MainWindow::filterCheckBoxStateChanged
+            attr.checkBox,&QCheckBox::stateChanged,
+            this,&MainWindow::filterCheckBoxStateChanged
         );
 
         connect(
-            attr.comboBox,
-            &QComboBox::currentTextChanged,
-            this,
-            &MainWindow::filterComboBoxCurrentTextChanged
+            attr.comboBox,&QComboBox::currentTextChanged,
+            this,&MainWindow::filterComboBoxCurrentTextChanged
         );
     }
 }
@@ -226,8 +219,7 @@ void MainWindow::additionalInfoAttrsInit(){
 void MainWindow::additionalInfoAttrsValidate(){
     for(const auto &aiAttr:additionalInfoAttrs){
         assert(std::any_of(
-            courseColumnAttrs.begin(),
-            courseColumnAttrs.end(),
+            courseColumnAttrs.begin(),courseColumnAttrs.end(),
             [&aiAttr](const CourseColumnAttr &ccAttr){
                 return aiAttr.columnTitle==ccAttr.columnTitle
                         &&aiAttr.columnIndex==ccAttr.columnIndex;
@@ -321,10 +313,8 @@ void MainWindow::courseTableInit(){
     }
 
     connect(
-        courseTable,
-        &QTableWidget::currentCellChanged,
-        this,
-        &MainWindow::courseTableCurrentCellChanged
+        courseTable,&QTableWidget::currentCellChanged,
+        this,&MainWindow::courseTableCurrentCellChanged
     );
 }
 
@@ -334,10 +324,8 @@ void MainWindow::debugDialogInit(){
 
 void MainWindow::debugDialogConnect(){
     connect(
-        debugButton,
-        &QPushButton::clicked,
-        debugDialog,
-        &DebugDialog::show
+        debugButton,&QPushButton::clicked,
+        debugDialog,&DebugDialog::show
     );
 }
 
@@ -348,8 +336,7 @@ void MainWindow::advancedSettingInit(){
 void MainWindow::advancedSettingConnect(){
     // Sync checkbox state with settings map
     connect(
-        findChild<QCheckBox*>("useRegExpInFilterCheckBox"),
-        &QCheckBox::stateChanged,
+        findChild<QCheckBox*>("useRegExpInFilterCheckBox"),&QCheckBox::stateChanged,
         [this](int state){
             this->settings["useRegExpInFilter"]=state;
             QMetaObject::invokeMethod(this,&MainWindow::filterCheckBoxStateChanged,Qt::QueuedConnection);
@@ -363,10 +350,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindo
     debugButton=findChild<QPushButton*>("debugButton");
 
     currentVersionLabel=findChild<QLabel*>("currentVersionLabel");
-    currentVersionLabel->setText(
-        QString("Current Version: %1")
-        .arg(Version::versionString)
-    );
+    currentVersionLabel->setText(QString("Current Version: %1").arg(Version::versionString));
 
     attrsInit();
     courseTableInit();
@@ -395,31 +379,27 @@ QByteArray MainWindow::getAll(const QString &fileName){
 
 QByteArray MainWindow::getAll(const QUrl &url,const int estSize){
     QEventLoop eventLoop(this);
-    QProgressDialog progDialog("Requesting...","Cancel",0,0,this);
+    QProgressDialog progDialog("Requesting course list...","Cancel",0,0,this);
     QNetworkAccessManager netAccMngr(this);
     QScopedPointer<QNetworkReply> netReplyP(netAccMngr.get(QNetworkRequest(url)));
     QTimer timer(this);
 
     // A workaround that event loop will not always quit on first call
-    timer.setInterval(50);
+    timer.setInterval(200);
     connect(
-        &timer,
-        &QTimer::timeout,
-        &eventLoop,
-        &QEventLoop::quit
+        &timer,&QTimer::timeout,
+        &eventLoop,&QEventLoop::quit
     );
 
     connect(
-        netReplyP.get(),
-        &QNetworkReply::finished, // Emitted when download finished AND when canceled
+        netReplyP.get(),&QNetworkReply::finished, // Emitted when download finished AND when canceled
         [&timer](){
             timer.start();
         }
     );
 
     connect(
-        netReplyP.get(),
-        &QNetworkReply::downloadProgress,
+        netReplyP.get(),&QNetworkReply::downloadProgress,
         [&progDialog,estSize](long long bytesReceived,long long bytesTotal){
             if(progDialog.isHidden()){ // Not allowing dialog to briefly reappear after cancel
                 return;
@@ -473,11 +453,11 @@ QByteArray MainWindow::getAll(const QUrl &url,const int estSize){
     return netReplyP->readAll();
 }
 
-QList<QStringList> MainWindow::parseCourseData(const QByteArray &courseData){
+std::tuple<QList<QStringList>,QString,bool> MainWindow::parseCourseData(const QByteArray &courseData){
     QJsonParseError parseError{};
     QJsonDocument jDoc=QJsonDocument::fromJson(courseData,&parseError);
     if(parseError.error!=QJsonParseError::NoError){
-        return QList<QStringList>();
+        return std::make_tuple(QList<QStringList>(),QString(),false);
     }
 
     QList<QStringList> courseList;
@@ -497,7 +477,22 @@ QList<QStringList> MainWindow::parseCourseData(const QByteArray &courseData){
         courseList.append(course);
     }
 
-    return courseList;
+    QString currentTerm=courseList.front().at(
+                std::find_if(
+                    courseColumnAttrs.begin(),courseColumnAttrs.end(),
+                    [](CourseColumnAttr &attr){return attr.columnTitle=="Current\nTerm";}
+                )->columnIndex
+            );
+    QString term=courseList.front().at(
+                std::find_if(
+                    courseColumnAttrs.begin(),courseColumnAttrs.end(),
+                    [](CourseColumnAttr &attr){return attr.columnTitle=="Term";}
+                )->columnIndex
+            );
+    term[0]=term[0].toUpper();
+
+    QString semester=QString("%1 %2").arg(term).arg(currentTerm.chopped(2));
+    return std::make_tuple(courseList,semester,true);
 }
 
 QString MainWindow::parseLocation(const QJsonValue &courseValue){
@@ -543,11 +538,8 @@ void MainWindow::semesterButtonClicked(){
     auto button=dynamic_cast<QPushButton*>(sender());
     auto buttonName=button->objectName();
     auto attr=std::find_if(
-        semesterButtonAttrs.begin(),
-        semesterButtonAttrs.end(),
-        [&buttonName](const SemesterButtonAttr &attr){
-            return buttonName==attr.buttonName;
-        }
+        semesterButtonAttrs.begin(),semesterButtonAttrs.end(),
+        [&buttonName](const SemesterButtonAttr &attr){return buttonName==attr.buttonName;}
     ).operator*();
 
     QByteArray courseData;
@@ -560,13 +552,14 @@ void MainWindow::semesterButtonClicked(){
         courseData=getAll(attr.dynamicCourseListUrl,attr.dynamicCourseListEstSize);
     }
 
-    QList<QStringList> courseList=parseCourseData(courseData);
-    if(!courseList.isEmpty()){ // An empty courseList is most likely caused by error
+    if(auto [courseList,semester,success]=parseCourseData(courseData);success){
         courseTableSetCourseList(courseList);
         courseTableColorizeEnroll();
 
         filterSetCourseList(courseList);
         groupBoxEnableAll();
+
+        findChild<QLabel*>("semesterLabel")->setText(QString("Showing semester: ")+semester);
     }
 }
 
@@ -578,8 +571,7 @@ void MainWindow::courseTableSetCourseList(const QList<QStringList> &courseList){
     for(int row=0;row<courseList.size();row++){
         for(const auto &attr:courseColumnAttrs){
             courseTable->setItem(
-                row,
-                attr.columnIndex,
+                row,attr.columnIndex,
                 new QTableWidgetItem(courseList.at(row).at(attr.columnIndex))
             );
         }
@@ -588,19 +580,13 @@ void MainWindow::courseTableSetCourseList(const QList<QStringList> &courseList){
 
 void MainWindow::courseTableColorizeEnroll(){
     const int actualEnrollColumnIndex=std::find_if(
-                courseColumnAttrs.begin(),
-                courseColumnAttrs.end(),
-                [](CourseColumnAttr &attr){
-                    return attr.columnTitle=="Actual\nEnroll";
-                }
+                courseColumnAttrs.begin(),courseColumnAttrs.end(),
+                [](CourseColumnAttr &attr){return attr.columnTitle=="Actual\nEnroll";}
             )->columnIndex;
 
     const int maxEnrollColumnIndex=std::find_if(
-                courseColumnAttrs.begin(),
-                courseColumnAttrs.end(),
-                [](CourseColumnAttr &attr){
-                    return attr.columnTitle=="Max\nEnroll";
-                }
+                courseColumnAttrs.begin(),courseColumnAttrs.end(),
+                [](CourseColumnAttr &attr){return attr.columnTitle=="Max\nEnroll";}
             )->columnIndex;
 
     for(int row=0;row<courseTable->rowCount();row++){

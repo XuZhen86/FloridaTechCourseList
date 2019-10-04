@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>720</height>
+    <height>740</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -273,6 +273,20 @@
          <string>Semester</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="1">
+          <widget class="QPushButton" name="summerSemesterButton">
+           <property name="text">
+            <string>Summer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QPushButton" name="fallSemesterButton">
+           <property name="text">
+            <string>Fall</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QPushButton" name="springSemesterButton">
            <property name="toolTip">
@@ -286,17 +300,13 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="summerSemesterButton">
+         <item row="1" column="0" colspan="3">
+          <widget class="QLabel" name="semesterLabel">
            <property name="text">
-            <string>Summer</string>
+            <string>Please select a semester</string>
            </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QPushButton" name="fallSemesterButton">
-           <property name="text">
-            <string>Fall</string>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -786,6 +796,43 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>springSemesterButton</tabstop>
+  <tabstop>summerSemesterButton</tabstop>
+  <tabstop>fallSemesterButton</tabstop>
+  <tabstop>crnSelectCheckBox</tabstop>
+  <tabstop>titleSelectCheckBox</tabstop>
+  <tabstop>beginTimeSelectCheckBox</tabstop>
+  <tabstop>endTimeSelectCheckBox</tabstop>
+  <tabstop>subjectSelectCheckBox</tabstop>
+  <tabstop>instructorSelectCheckBox</tabstop>
+  <tabstop>actualEnrollSelectCheckBox</tabstop>
+  <tabstop>maxEnrollSelectCheckBox</tabstop>
+  <tabstop>courseNumberSelectCheckBox</tabstop>
+  <tabstop>sectionSelectCheckBox</tabstop>
+  <tabstop>daysSelectCheckBox</tabstop>
+  <tabstop>crnFilterCheckBox</tabstop>
+  <tabstop>crnComboBox</tabstop>
+  <tabstop>subjectFilterCheckBox</tabstop>
+  <tabstop>subjectComboBox</tabstop>
+  <tabstop>courseNumberFilterCheckBox</tabstop>
+  <tabstop>courseNumberComboBox</tabstop>
+  <tabstop>titleFilterCheckBox</tabstop>
+  <tabstop>titleComboBox</tabstop>
+  <tabstop>instructorFilterCheckBox</tabstop>
+  <tabstop>instructorComboBox</tabstop>
+  <tabstop>daysFilterCheckBox</tabstop>
+  <tabstop>daysComboBox</tabstop>
+  <tabstop>descriptionFilterCheckBox</tabstop>
+  <tabstop>descriptionComboBox</tabstop>
+  <tabstop>useRegExpInFilterCheckBox</tabstop>
+  <tabstop>secretCodeLineEdit</tabstop>
+  <tabstop>debugButton</tabstop>
+  <tabstop>descriptionPlainTextEdit</tabstop>
+  <tabstop>creditHoursPlainTextEdit</tabstop>
+  <tabstop>locationPlainTextEdit</tabstop>
+  <tabstop>courseTable</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

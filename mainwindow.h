@@ -70,7 +70,7 @@ class MainWindow:public QMainWindow{
     void groupBoxEnableAll();
 
     private:
-    QList<QStringList> parseCourseData(const QByteArray &courseData);
+    std::tuple<QList<QStringList>,QString,bool> parseCourseData(const QByteArray &courseData);
     QString parseLocation(const QJsonValue &courseValue);
     QString parseTime(const QJsonValue &courseValue,const QString &jsonName);
     QString parseOthers(const QJsonValue &courseValue,const CourseColumnAttr &attr);
