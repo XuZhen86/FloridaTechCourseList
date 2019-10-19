@@ -11,8 +11,8 @@ class Version{
     static const char *lastCommitSha1;
 
     private:
-    Version();
-    ~Version();
+    Version()=delete;
+    ~Version()=delete;
 };
 
 #endif // VERSION_H

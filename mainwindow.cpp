@@ -50,7 +50,7 @@ QList<MainWindow::CourseColumnAttr> MainWindow::courseColumnAttrs{
     {"Actual\nEnroll","actual_enroll",QJsonValue::Double,9, "actualEnrollSelectCheckBox",nullptr,true, -1,false,50},
     {"Max\nEnroll",   "max_enroll",   QJsonValue::Double,10,"maxEnrollSelectCheckBox",   nullptr,true, -1,false,50},
     {"Description",   "description",  QJsonValue::String,11,"",                          nullptr,false,-1,true, 0},
-    {"Credit\nHours", "credit_hours", QJsonValue::Double,12,"",                          nullptr,false,-1,true, 0},
+    {"Credit\nHours", "credit_hours", QJsonValue::Double,12,"creditHoursSelectCheckBox", nullptr,true, 6, false,60},
     {"Location",      "",             QJsonValue::Null,  13,"",                          nullptr,false,-1,true, 0},
     {"Current\nTerm", "current_term", QJsonValue::String,14,"",                          nullptr,false,-1,true, 0},
     {"Term",          "term",         QJsonValue::String,15,"",                          nullptr,false,-1,true, 0}
@@ -80,6 +80,11 @@ void MainWindow::courseColumnConnect(){
             this,&MainWindow::selectCheckBoxStateChanged
         );
     }
+
+    connect(
+        findChild<QPushButton*>("exportToExcelPushButton"),&QPushButton::clicked,
+        this,&MainWindow::exportToExcelPushButtonClicked
+    );
 }
 
 struct MainWindow::SemesterButtonAttr{
@@ -130,7 +135,8 @@ QList<MainWindow::FilterAttr> MainWindow::filterAttrs{
     {"titleFilterCheckBox",       nullptr,"titleComboBox",       nullptr,3, 3, Qt::CaseInsensitive,false,QCompleter::PopupCompletion},
     {"instructorFilterCheckBox",  nullptr,"instructorComboBox",  nullptr,4, 4, Qt::CaseInsensitive,true, QCompleter::PopupCompletion},
     {"daysFilterCheckBox",        nullptr,"daysComboBox",        nullptr,5, 5, Qt::CaseInsensitive,true, QCompleter::PopupCompletion},
-    {"descriptionFilterCheckBox", nullptr,"descriptionComboBox", nullptr,11,-1,Qt::CaseSensitive,  false,QCompleter::PopupCompletion}
+    {"descriptionFilterCheckBox", nullptr,"descriptionComboBox", nullptr,11,-1,Qt::CaseSensitive,  false,QCompleter::PopupCompletion},
+    {"creditHoursFilterCheckBox", nullptr,"creditHoursComboBox", nullptr,12,6, Qt::CaseInsensitive,true, QCompleter::PopupCompletion}
 };
 
 void MainWindow::filterAttrsInit(){
@@ -146,13 +152,13 @@ void MainWindow::filterAttrsInit(){
 
 void MainWindow::filterAttrsValidate(){
     for(auto &fAttr:filterAttrs){
-        assert(std::any_of(
+        assert(std::count_if(
             courseColumnAttrs.begin(),courseColumnAttrs.end(),
             [&fAttr](const CourseColumnAttr &ccAttr){
                 return fAttr.columnIndex==ccAttr.columnIndex
                         &&fAttr.comboBoxSetIndex==ccAttr.filterComboBoxSetIndex;
             }
-        ));
+        )==1);
     }
 }
 
@@ -218,13 +224,13 @@ void MainWindow::additionalInfoAttrsInit(){
 
 void MainWindow::additionalInfoAttrsValidate(){
     for(const auto &aiAttr:additionalInfoAttrs){
-        assert(std::any_of(
+        assert(std::count_if(
             courseColumnAttrs.begin(),courseColumnAttrs.end(),
             [&aiAttr](const CourseColumnAttr &ccAttr){
                 return aiAttr.columnTitle==ccAttr.columnTitle
                         &&aiAttr.columnIndex==ccAttr.columnIndex;
             }
-        ));
+        )==1);
     }
 }
 
@@ -350,7 +356,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindo
     debugButton=findChild<QPushButton*>("debugButton");
 
     currentVersionLabel=findChild<QLabel*>("currentVersionLabel");
-    currentVersionLabel->setText(QString("Current Version: %1").arg(Version::versionString));
+    currentVersionLabel->setText(QString("Version: %1").arg(Version::versionString));
 
     attrsInit();
     courseTableInit();
@@ -365,16 +371,13 @@ MainWindow::~MainWindow(){
 }
 
 QByteArray MainWindow::getAll(const QString &fileName){
-    if(fileName.isEmpty()){
+    QFile file(fileName,this);
+    if(!file.open(QFile::ReadOnly|QFile::Text)){
         return QByteArray();
     }
 
-    QFile file(fileName,this);
-    if(file.open(QFile::ReadOnly|QFile::Text)){
-        return file.readAll();
-    }
-
-    return QByteArray();
+    return file.readAll();
+    // QFile::~QFile() auto closes if necessary
 }
 
 QByteArray MainWindow::getAll(const QUrl &url,const int estSize){
@@ -413,8 +416,7 @@ QByteArray MainWindow::getAll(const QUrl &url,const int estSize){
 
             progDialog.setValue(static_cast<int>(bytesReceived));
             progDialog.setLabelText(
-                QString("Received %L1 bytes...")
-                .arg(bytesReceived)
+                QString("Received %L1 bytes...").arg(bytesReceived)
             );
         }
     );
@@ -438,9 +440,7 @@ QByteArray MainWindow::getAll(const QUrl &url,const int estSize){
        &&netReplyP->error()!=QNetworkReply::OperationCanceledError){
         QMetaObject metaObject=QNetworkReply::staticMetaObject;
         QMetaEnum metaEnum=metaObject.enumerator(metaObject.indexOfEnumerator("NetworkError"));
-        QString errorString=
-            QString("Error When Receiving Data:\n%1\n\nPlease check your Internet connection and try again")
-            .arg(metaEnum.valueToKey(netReplyP->error()));
+        QString errorString=QString("Error When Receiving Data:\n%1\n\nPlease check your Internet connection and try again").arg(metaEnum.valueToKey(netReplyP->error()));
         QMessageBox::warning(this,"Error",errorString,QMessageBox::Ok);
 
         return QByteArray();
@@ -461,7 +461,7 @@ std::tuple<QList<QStringList>,QString,bool> MainWindow::parseCourseData(const QB
     }
 
     QList<QStringList> courseList;
-    for(const auto &courseValue:jDoc["records"].toArray()){
+    for(const auto courseValue:jDoc["records"].toArray()){
         QStringList course;
 
         for(const auto &attr:courseColumnAttrs){
@@ -478,17 +478,17 @@ std::tuple<QList<QStringList>,QString,bool> MainWindow::parseCourseData(const QB
     }
 
     QString currentTerm=courseList.front().at(
-                std::find_if(
-                    courseColumnAttrs.begin(),courseColumnAttrs.end(),
-                    [](CourseColumnAttr &attr){return attr.columnTitle=="Current\nTerm";}
-                )->columnIndex
-            );
+        std::find_if(
+            courseColumnAttrs.begin(),courseColumnAttrs.end(),
+            [](CourseColumnAttr &attr){return attr.columnTitle=="Current\nTerm";}
+        )->columnIndex
+    );
     QString term=courseList.front().at(
-                std::find_if(
-                    courseColumnAttrs.begin(),courseColumnAttrs.end(),
-                    [](CourseColumnAttr &attr){return attr.columnTitle=="Term";}
-                )->columnIndex
-            );
+        std::find_if(
+            courseColumnAttrs.begin(),courseColumnAttrs.end(),
+            [](CourseColumnAttr &attr){return attr.columnTitle=="Term";}
+        )->columnIndex
+    );
     term[0]=term[0].toUpper();
 
     QString semester=QString("%1 %2").arg(term).arg(currentTerm.chopped(2));
@@ -500,21 +500,19 @@ QString MainWindow::parseLocation(const QJsonValue &courseValue){
         return "(TBA)";
     }
 
-    return QString("%1 %2").arg(
-                courseValue["building"].toString(),
-                courseValue["room"].toString());
+    return QString("%1 %2").arg(courseValue["building"].toString()).arg(courseValue["room"].toString());
 }
 
 QString MainWindow::parseTime(const QJsonValue &courseValue,const QString &jsonName){
     int timeNum=courseValue[jsonName].toInt();
 
-    if(timeNum){
-        QString timeString=QString("%1").arg(timeNum,4,10);
-        timeString.insert(timeString.length()/2,":");
-        return timeString;
+    if(timeNum==0){
+        return QString();
     }
 
-    return QString();
+    QString timeString=QString("%1").arg(timeNum,4,10);
+    timeString.insert(timeString.length()/2,":");
+    return timeString;
 }
 
 QString MainWindow::parseOthers(const QJsonValue &courseValue,const CourseColumnAttr &attr){
@@ -579,15 +577,15 @@ void MainWindow::courseTableSetCourseList(const QList<QStringList> &courseList){
 }
 
 void MainWindow::courseTableColorizeEnroll(){
-    const int actualEnrollColumnIndex=std::find_if(
-                courseColumnAttrs.begin(),courseColumnAttrs.end(),
-                [](CourseColumnAttr &attr){return attr.columnTitle=="Actual\nEnroll";}
-            )->columnIndex;
+    auto actualEnrollColumnIndex=std::find_if(
+        courseColumnAttrs.begin(),courseColumnAttrs.end(),
+        [](CourseColumnAttr &attr){return attr.columnTitle=="Actual\nEnroll";}
+    )->columnIndex;
 
-    const int maxEnrollColumnIndex=std::find_if(
-                courseColumnAttrs.begin(),courseColumnAttrs.end(),
-                [](CourseColumnAttr &attr){return attr.columnTitle=="Max\nEnroll";}
-            )->columnIndex;
+    auto maxEnrollColumnIndex=std::find_if(
+        courseColumnAttrs.begin(),courseColumnAttrs.end(),
+        [](CourseColumnAttr &attr){return attr.columnTitle=="Max\nEnroll";}
+    )->columnIndex;
 
     for(int row=0;row<courseTable->rowCount();row++){
         int actualEnroll=courseTable->item(row,actualEnrollColumnIndex)->text().toInt();
@@ -596,7 +594,7 @@ void MainWindow::courseTableColorizeEnroll(){
         maxEnroll=std::max(maxEnroll,actualEnroll);
 
         if(maxEnroll){
-            double percentEnroll=(double)actualEnroll/maxEnroll;
+            double percentEnroll=static_cast<double>(actualEnroll)/maxEnroll;
             auto color=QColor::fromHsvF((1-percentEnroll)*120/360,0.75,0.75);
             courseTable->item(row,actualEnrollColumnIndex)->setTextColor(color);
         }
@@ -680,11 +678,16 @@ void MainWindow::filterComboBoxCurrentTextChanged(){
     for(int row=0;row<courseTable->rowCount();row++){
         courseTable->setRowHidden(row,hidden.at(row));
     }
+
+    // Change courseTableLabel to "Showing x of y"
+    auto nShowing=std::count(hidden.begin(),hidden.end(),false);
+    auto nTotal=hidden.size();
+    findChild<QLabel*>("courseTableLabel")->setText(QString("Showing %1 of %2").arg(nShowing).arg(nTotal));
 }
 
 void MainWindow::courseTableCurrentCellChanged(int currentRow,int currentColumn,int previousRow,int previousColumn){
-    Q_UNUSED(previousRow);
-    Q_UNUSED(previousColumn);
+    Q_UNUSED(previousRow)
+    Q_UNUSED(previousColumn)
 
     // It could be -1 for the first call after loading course list
     if(currentRow==-1||currentColumn==-1){
@@ -696,4 +699,43 @@ void MainWindow::courseTableCurrentCellChanged(int currentRow,int currentColumn,
             courseTable->item(currentRow,attr.columnIndex)->text()
         );
     }
+}
+
+void MainWindow::exportToExcelPushButtonClicked(){
+    auto fileName=QFileDialog::getSaveFileName(this,"Save to CSV file","Selected Courses.csv","Comma Separated (*.csv)");
+
+    QFile file(fileName,this);
+    if(!file.open(QFile::WriteOnly|QFile::Truncate|QFile::Text)){
+        return;
+    }
+
+    QTextStream textStream(&file);
+
+    // Print header
+    for(const auto &attr:courseColumnAttrs){
+        if(courseTable->isColumnHidden(attr.columnIndex)){
+            continue;
+        }
+        textStream<<QString("\"%1\",").arg(QString(attr.columnTitle).replace("\n"," "));
+    }
+    textStream<<endl;
+
+    // Print each line
+    for(int row=0;row<courseTable->rowCount();row++){
+        // Skip hidden lines
+        if(courseTable->isRowHidden(row)){
+            continue;
+        }
+
+        for(const auto &attr:courseColumnAttrs){
+            // Skip hidden columns
+            if(courseTable->isColumnHidden(attr.columnIndex)){
+                continue;
+            }
+            textStream<<QString("\"%1\",").arg(courseTable->item(row,attr.columnIndex)->text());
+        }
+        textStream<<endl;
+    }
+
+    // QFile::~QFile() auto closes if necessary
 }

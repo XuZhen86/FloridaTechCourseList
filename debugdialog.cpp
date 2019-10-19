@@ -23,7 +23,7 @@ QList<DebugDialog::SysInfoAttr> DebugDialog::sysInfoAttrs{
 };
 
 void DebugDialog::sysInfoAttrsInit(){
-    for(auto attr:sysInfoAttrs){
+    for(const auto &attr:sysInfoAttrs){
         sysPlainTextEdit->appendPlainText(
             QString("%1 = %2")
             .arg(attr.key,attr.value)

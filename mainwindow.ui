@@ -31,7 +31,7 @@
         <property name="flat">
          <bool>false</bool>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_10">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QTableWidget" name="courseTable">
            <property name="autoFillBackground">
@@ -84,6 +84,37 @@
            </attribute>
           </widget>
          </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="courseTableLabel">
+             <property name="text">
+              <string>Showing 0 of 0</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="exportToExcelPushButton">
+             <property name="text">
+              <string>Export to Excel (.csv)</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
         </layout>
        </widget>
       </item>
@@ -135,7 +166,10 @@
               <enum>Qt::ScrollBarAlwaysOff</enum>
              </property>
              <property name="readOnly">
-              <bool>true</bool>
+              <bool>false</bool>
+             </property>
+             <property name="textInteractionFlags">
+              <set>Qt::TextEditorInteraction</set>
              </property>
              <property name="backgroundVisible">
               <bool>false</bool>
@@ -429,6 +463,13 @@
            </property>
           </widget>
          </item>
+         <item row="4" column="2">
+          <widget class="QCheckBox" name="creditHoursSelectCheckBox">
+           <property name="text">
+            <string>Credit Hours</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -444,33 +485,7 @@
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="crnFilterCheckBox">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>CRN</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QCheckBox" name="titleFilterCheckBox">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Title</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
+         <item row="6" column="0">
           <widget class="QCheckBox" name="daysFilterCheckBox">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -499,33 +514,54 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
-          <widget class="QCheckBox" name="instructorFilterCheckBox">
+         <item row="1" column="1" colspan="2">
+          <widget class="QComboBox" name="subjectComboBox">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="text">
-            <string>Instructor</string>
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+           <property name="maxVisibleItems">
+            <number>20</number>
+           </property>
+           <property name="insertPolicy">
+            <enum>QComboBox::InsertAlphabetically</enum>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QCheckBox" name="courseNumberFilterCheckBox">
+         <item row="6" column="1" colspan="2">
+          <widget class="QComboBox" name="daysComboBox">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="text">
-            <string>Course Number</string>
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+           <property name="maxVisibleItems">
+            <number>20</number>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
+         <item row="7" column="0">
           <widget class="QCheckBox" name="descriptionFilterCheckBox">
            <property name="text">
             <string>Description</string>
@@ -560,8 +596,8 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1" colspan="2">
-          <widget class="QComboBox" name="subjectComboBox">
+         <item row="4" column="1" colspan="2">
+          <widget class="QComboBox" name="instructorComboBox">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -582,6 +618,19 @@
            </property>
            <property name="sizeAdjustPolicy">
             <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="courseNumberFilterCheckBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Course Number</string>
            </property>
           </widget>
          </item>
@@ -610,6 +659,45 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="crnFilterCheckBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>CRN</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1" colspan="2">
+          <widget class="QComboBox" name="descriptionComboBox">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QCheckBox" name="instructorFilterCheckBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Instructor</string>
+           </property>
+          </widget>
+         </item>
          <item row="3" column="1" colspan="2">
           <widget class="QComboBox" name="titleComboBox">
            <property name="enabled">
@@ -632,55 +720,28 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1" colspan="2">
-          <widget class="QComboBox" name="instructorComboBox">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
+         <item row="3" column="0">
+          <widget class="QCheckBox" name="titleFilterCheckBox">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="editable">
-            <bool>true</bool>
+           <property name="text">
+            <string>Title</string>
            </property>
-           <property name="maxVisibleItems">
-            <number>20</number>
-           </property>
-           <property name="insertPolicy">
-            <enum>QComboBox::InsertAlphabetically</enum>
-           </property>
-           <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QCheckBox" name="creditHoursFilterCheckBox">
+           <property name="text">
+            <string>Credit Hours</string>
            </property>
           </widget>
          </item>
          <item row="5" column="1" colspan="2">
-          <widget class="QComboBox" name="daysComboBox">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="editable">
-            <bool>false</bool>
-           </property>
-           <property name="maxVisibleItems">
-            <number>20</number>
-           </property>
-           <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1" colspan="2">
-          <widget class="QComboBox" name="descriptionComboBox">
+          <widget class="QComboBox" name="creditHoursComboBox">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -725,22 +786,16 @@
        </spacer>
       </item>
       <item>
-       <widget class="QGroupBox" name="versionGroupBox">
-        <property name="title">
-         <string>Version</string>
+       <widget class="QLabel" name="currentVersionLabel">
+        <property name="text">
+         <string/>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <widget class="QLabel" name="currentVersionLabel">
-           <property name="text">
-            <string>Current Version:</string>
-           </property>
-           <property name="openExternalLinks">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="openExternalLinks">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item>
@@ -748,11 +803,11 @@
         <property name="title">
          <string>Magic</string>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <layout class="QGridLayout" name="gridLayout_5">
          <property name="sizeConstraint">
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
-         <item>
+         <item row="0" column="0" colspan="2">
           <widget class="QLineEdit" name="secretCodeLineEdit">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -765,7 +820,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item row="0" column="2">
           <widget class="QPushButton" name="debugButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -811,6 +866,7 @@
   <tabstop>courseNumberSelectCheckBox</tabstop>
   <tabstop>sectionSelectCheckBox</tabstop>
   <tabstop>daysSelectCheckBox</tabstop>
+  <tabstop>creditHoursSelectCheckBox</tabstop>
   <tabstop>crnFilterCheckBox</tabstop>
   <tabstop>crnComboBox</tabstop>
   <tabstop>subjectFilterCheckBox</tabstop>
@@ -821,16 +877,19 @@
   <tabstop>titleComboBox</tabstop>
   <tabstop>instructorFilterCheckBox</tabstop>
   <tabstop>instructorComboBox</tabstop>
+  <tabstop>creditHoursFilterCheckBox</tabstop>
+  <tabstop>creditHoursComboBox</tabstop>
   <tabstop>daysFilterCheckBox</tabstop>
   <tabstop>daysComboBox</tabstop>
   <tabstop>descriptionFilterCheckBox</tabstop>
   <tabstop>descriptionComboBox</tabstop>
+  <tabstop>exportToExcelPushButton</tabstop>
   <tabstop>useRegExpInFilterCheckBox</tabstop>
-  <tabstop>secretCodeLineEdit</tabstop>
-  <tabstop>debugButton</tabstop>
   <tabstop>descriptionPlainTextEdit</tabstop>
   <tabstop>creditHoursPlainTextEdit</tabstop>
   <tabstop>locationPlainTextEdit</tabstop>
+  <tabstop>secretCodeLineEdit</tabstop>
+  <tabstop>debugButton</tabstop>
   <tabstop>courseTable</tabstop>
  </tabstops>
  <resources/>

@@ -13,7 +13,7 @@ class DebugDialog:public QDialog{
 
     public:
     explicit DebugDialog(QWidget *parent=nullptr);
-    ~DebugDialog();
+    ~DebugDialog() override;
 
     private:
     Ui::DebugDialog *ui;

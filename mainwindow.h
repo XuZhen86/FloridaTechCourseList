@@ -3,10 +3,10 @@
 
 #include<QMainWindow>
 
-#include<QList>
-#include<QTableWidget>
 #include<QJsonValue>
 #include<QLabel>
+#include<QList>
+#include<QTableWidget>
 #include"debugdialog.h"
 
 namespace Ui{
@@ -22,7 +22,7 @@ class MainWindow:public QMainWindow{
 
     private:
     QByteArray getAll(const QString &fileName);
-    QByteArray getAll(const QUrl &url,const int estSize=-1);
+    QByteArray getAll(const QUrl &url,int estSize=-1);
 
     private:
     Ui::MainWindow *ui;
@@ -86,6 +86,7 @@ class MainWindow:public QMainWindow{
     void filterCheckBoxStateChanged();
     void filterComboBoxCurrentTextChanged();
     void courseTableCurrentCellChanged(int currentRow,int currentColumn,int previousRow,int previousColumn);
+    void exportToExcelPushButtonClicked();
 };
 
 #endif // MAINWINDOW_H
