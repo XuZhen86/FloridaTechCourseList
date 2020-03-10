@@ -596,7 +596,7 @@ void MainWindow::courseTableColorizeEnroll(){
         if(maxEnroll){
             double percentEnroll=static_cast<double>(actualEnroll)/maxEnroll;
             auto color=QColor::fromHsvF((1-percentEnroll)*120/360,0.75,0.75);
-            courseTable->item(row,actualEnrollColumnIndex)->setTextColor(color);
+            courseTable->item(row,actualEnrollColumnIndex)->setForeground(color);
         }
     }
 }

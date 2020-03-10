@@ -1,5 +1,12 @@
+This project is deprecated due to incompatible changes to university API.
+Please goto [FloridaTechCoursePlanner](https://github.com/XuZhen86/FloridaTechCoursePlanner) to see the new implementation based on HTML and JavaScript.
+If you still want to test it, type ```StaticCourseList``` into the textbox in the right-lower corner and then select the semester.
+Although it is impossible to get the most recent data from university API, you can still view a cached version of data.
+
 # Florida Tech Course List
 Florida Tech Course List is a stand-alone program that allows users to view the course list of Florida Tech.
+<br>
+<img src="89d88976d589a5028acfc10157b7eedace99804d.png" alt="drawing" width="1392">
 
 ## Highlights
 Florida Tech Course List supports multiple functions to ensure a smooth user experience when using the program.
@@ -32,11 +39,6 @@ Florida Tech Course List is a multi-platform program for everyone!
 Florida Tech Course List offers pre-compiled binary packages.
 * For Florida Tech users, please head to [Latest Release](https://github.fit.edu/zxu2016/FloridaTechCourseList/releases/latest) on [Florida Tech GitHub](https://github.fit.edu/).
 * For all other users, please head to [Latest Release](https://github.com/XuZhen86/FloridaTechCourseList/releases/latest) on [Github](https://github.com/).
-
-## Support Florida Tech Course List by Giving it a Star!
-Please spend 5 seconds to click the Star button on top of this page. It shows more people are using Florida Tech Course List and it is the motivation that keeps it running!
-<br>
-<img src="../images/bbb42aa01bc7dcc11fc1546a439fd418a98ba7802760b2b9c3d9af6a13852476.png" alt="drawing" width="1000">
 
 ## How to Install
 Florida Tech Course List requires some tackle before you can use it. But do not worry, you will be fine if you follow the guide!
